@@ -5,34 +5,10 @@ import { Avatar, Box, Grid, Typography, Button } from "@mui/material";
 import { useNavigate } from 'react-router-dom';
 
 // import API
-import { getDataPengguna } from './API';
+import { getDataPengguna, dataPengguna } from './API';
 
 // import icon
 import { IoPerson } from "react-icons/io5";
-
-type dataPengguna = {
-  address: {
-    city: string,
-    geo: {
-      lat: string,
-      lng: string
-    },
-    street: string,
-    suite: string,
-    zipcode: string
-  },
-  company: {
-    bs: string,
-    catchPhrase: string,
-    name: string
-  },
-  email: string,
-  id: number,
-  name: string,
-  phone: string,
-  username: string,
-  website: string
-}
 
 const App = () => {
   const [dataPengguna, setDataPengguna] = useState<Array<dataPengguna>>([]);
@@ -79,7 +55,7 @@ const App = () => {
               <Typography sx={{ fontSize: 15, ml: 1}}>{user.phone}</Typography>
               <Typography sx={{ fontSize: 15, ml: 1}}>{user.email}</Typography>
             </Box>
-            <Button variant='contained' onClick={() => movingDetailPosting(user.id)} sx={{ mx: 5, mb: 1}}>Detail Person</Button>
+            <Button variant='contained' onClick={() => movingDetailPosting(user.id)} sx={{ mx: 5, mb: 1}}>Detail Posting</Button>
           </Grid>
         ))}
       </Grid>
