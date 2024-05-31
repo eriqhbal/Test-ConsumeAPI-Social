@@ -52,6 +52,7 @@ const PostingUser = () => {
                 <Typography variant='h6' sx={{px: 2}}>
                   {pos.title}
                 </Typography>
+                
               </Paper>
             </Grid>
           ))}
