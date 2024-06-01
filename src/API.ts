@@ -44,7 +44,7 @@ export async function getDataPengguna() {
 }
 
 // get detail user
-export async function getDetailUser(id: string | unknown) {
+export async function getDetailUser(id: unknown) {
    const endpoint = `https://jsonplaceholder.typicode.com/users/${id}`;
 
    return await (await fetch(endpoint)).json();
@@ -63,4 +63,42 @@ export async function getCommentUser(id?: string | number) {
   const endpoint = `https://jsonplaceholder.typicode.com/posts/${id}/comments`;
 
   return await (await fetch(endpoint)).json();
+}
+
+// Post Posting User
+export async function postPostingan(title: string, body: string, userId: unknown) {
+  const endpoint = "https://jsonplaceholder.typicode.com/posts";
+
+  return fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json; charset=UTF-8",
+          },
+          body: JSON.stringify({title, body, userId}),
+          }).then(res => res.json());
+}
+
+// Put Postingan User
+export async function editPostingan(
+  userId: string | number,
+  id: string | unknown,
+  title?: string,
+  body?: string
+) {
+  const endpoint = `https://jsonplaceholder.typicode.com/posts/${id}`;
+
+  return fetch(endpoint, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json; charset=UTF-8",
+    },
+    body: JSON.stringify({ id, title, body, userId }),
+  }).then((res) => res.json());
+}
+
+// Remove Postingan User
+export async function removePost(id: number) {
+  return fetch(`https://jsonplaceholder.typicode.com/posts/${id}`,{
+    method: 'DELETE'
+  });
 }
