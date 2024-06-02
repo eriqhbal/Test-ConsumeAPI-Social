@@ -2,15 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { Container, 
          Typography, 
-         Paper, 
-         Grid, 
-         Tooltip, 
-         Box, 
          TextField,
-         Button } from '@mui/material';
-
-// import icon
-import { MdEdit, MdDelete } from "react-icons/md";
+         Box,
+         Button,
+         Grid,
+         } from '@mui/material';
 
 // import api
 import { getUserPosting, 
@@ -20,14 +16,14 @@ import { getUserPosting,
          typePostingUser, 
          dataPengguna, 
          postPostingan,
+         editPostingan,
          removePost } from './API';
-import FormEdit from './FormEdit';
+import DataPostingUser from './DataPostingUser';
 
 const PostingUser = () => {
   const [body, setBody] = useState<string>("");
   const [title, setTitle] = useState<string>("");
 
-  const [editButton, setEditButton] = useState<boolean>(false);
   const [detailUser, setDetailUser] = useState<dataPengguna>();
   const [commentUser, setCommentUser] = useState<Array<typeCommentUser>>([]);
   const [dataPosting, setDataPosting] = useState<Array<typePostingUser>>([]);
@@ -47,7 +43,7 @@ const PostingUser = () => {
   },[userId]);
 
   useEffect(() => {
-
+    setCommentUser([]);
     const dataId: Array<number> = [];
     dataPosting.map((data) => {
           dataId.push(data.id);
@@ -55,10 +51,16 @@ const PostingUser = () => {
 
       dataId.forEach(async (number) => {
         const dataComm = await getCommentUser(number);
-        setCommentUser(prev => [...prev, ...dataComm]);
+
+        if(commentUser.some((val) => val.id === number)) {
+          return;
+        } else {
+          setCommentUser((commentUser) => [...commentUser, ...dataComm]);
+        }
+        
       })
 
-  },[dataPosting]);
+  },[dataPosting, userId]);
 
   const submitNewPosting = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,13 +71,11 @@ const PostingUser = () => {
     setBody("");
   }
 
-  const handleEditPostingan = async (postNum: number,) => {
-    console.log(postNum);
-    setEditButton(!editButton);
-  }
-
-  const handleOkeEdit = async (id: number) => {
-    setEditButton(!editButton);
+  const handleOkeEdit = async (editBody: string, editTitle: string, idPosting: number) => {
+    const newData = await editPostingan(userId, idPosting, editTitle, editBody);
+    console.log(newData, '');
+    setDataPosting(dataPosting.map(data => data.id === idPosting ? newData : data));
+    setCommentUser([]);
   }
 
   const handleRemovePostingan = async (id: number) => {
@@ -141,107 +141,10 @@ const PostingUser = () => {
           spacing={{ xs: 2, md: 3 }}
           columns={{ xs: 4, sm: 8, md: 8 }}
         >
-          {dataPosting?.map((pos, index) => (
-            <Grid item key={pos.id} md={4}>
-              <Paper sx={{ p: 1, m: 2 }} elevation={3}>
-                <Tooltip title="number" placement="left-start">
-                  {index + 1}
-                </Tooltip>
-                {editButton ? (
-                  <FormEdit title={pos.title} body={pos.body} idUser={pos.userId} idPosting={pos.id}/>
-                ) : (
-                  <React.Fragment>
-                    {" "}
-                    <Typography variant="h6" sx={{ px: 2, fontWeight: 600 }}>
-                      {pos.title}
-                    </Typography>
-                    <Typography variant="h6" sx={{ px: 2 }}>
-                      {pos.body}
-                    </Typography>
-                  </React.Fragment>
-                )}
-
-                <Container>
-                  {editButton ? (
-                    <Box
-                      sx={{
-                        mx: "auto",
-                        width: 400,
-                        textAlign: "center",
-                        mt: 2,
-                      }}
-                    >
-                      <Button
-                        variant="contained"
-                        color="success"
-                        onClick={() => handleOkeEdit(pos.id)}
-                        sx={{ width: "100%" }}
-                      >
-                        Done
-                      </Button>
-                    </Box>
-                  ) : (
-                    <Box
-                      sx={{
-                        mx: "auto",
-                        width: 400,
-                        textAlign: "center",
-                        mt: 2,
-                      }}
-                    >
-                      <Button
-                        variant="contained"
-                        color="secondary"
-                        sx={{ mr: 2 }}
-                        onClick={() => handleEditPostingan(pos.id)}
-                      >
-                        <MdEdit style={{ fontSize: 18, marginRight: 4 }} />
-                        Edit
-                      </Button>
-                      <Button
-                        variant="contained"
-                        color="error"
-                        sx={{ mr: 2 }}
-                        onClick={() => handleRemovePostingan(pos.id)}
-                      >
-                        <MdDelete style={{ fontSize: 18, marginRight: 4 }} />
-                        Delete
-                      </Button>
-                    </Box>
-                  )}
-                </Container>
-                <Typography sx={{ mt: 4 }} variant="h6">
-                  Comments:
-                </Typography>
-                <Box
-                  sx={{
-                    mt: 1,
-                    borderBlockStart: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    height: 215,
-                    overflow: "auto",
-                  }}
-                >
-                  {commentUser?.map((comm) =>
-                    pos.id === comm.postId ? (
-                      <Box
-                        key={comm.id}
-                        sx={{ mt: 2, p: 1, border: 1, borderRadius: 4 }}
-                      >
-                        <Typography sx={{ fontSize: 19, fontWeight: "bold" }}>
-                          {comm.email}
-                        </Typography>
-                        <Typography>{comm.body}</Typography>
-                      </Box>
-                    ) : (
-                      ""
-                    )
-                  )}
-                </Box>
-              </Paper>
-            </Grid>
-          ))}
+          {dataPosting?.map((pos, index) => {
+            return (
+            <DataPostingUser key={pos.id} pos={pos} handleOkeEdit={handleOkeEdit} index={index} handleRemovePostingan={handleRemovePostingan} commentUser={commentUser}/>
+          )})}
         </Grid>
       </Container>
     </React.Fragment>

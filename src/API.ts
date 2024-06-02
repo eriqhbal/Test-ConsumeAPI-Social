@@ -26,7 +26,7 @@ export type typePostingUser = {
   body: string;
   id: number;
   title: string;
-  userId: number;
+  userId: number | unknown;
 };
 
 export type typeCommentUser = {
@@ -80,7 +80,7 @@ export async function postPostingan(title: string, body: string, userId: unknown
 
 // Put Postingan User
 export async function editPostingan(
-  userId: string | number,
+  userId: string | unknown,
   id: string | unknown,
   title?: string,
   body?: string
